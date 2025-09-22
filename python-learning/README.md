@@ -25,4 +25,17 @@ Welcome to your Python learning and practice space! This area is organized to he
 - [W3Schools Python](https://www.w3schools.com/python/)
 - [Real Python](https://realpython.com/)
 
+## Detailed Roadmap
+
+For a step-by-step guide to becoming a Python expert, see [roadmap.md](./roadmap.md).
+
+This roadmap covers:
+- Mastering the basics (syntax, data types, control flow)
+- Practicing regularly with exercises and projects
+- Learning advanced topics (OOP, modules, file handling, exceptions)
+- Exploring popular libraries (NumPy, pandas, Flask, Django, etc.)
+- Solving algorithms and data structure problems
+- Building real-world projects
+- Contributing to open source and reading others' code
+
 Happy coding!
