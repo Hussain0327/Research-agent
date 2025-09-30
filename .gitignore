@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Environments
+.venv/
+
+# Local config
+.env
+
+# Caches & tooling
+.cache/
+.pytest_cache/
+
+# Outputs
+output/
+
+# macOS
+.DS_Store
+
