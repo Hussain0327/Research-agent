@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ subject }}</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.55; color: #111; }
+      h1, h2, h3 { margin-top: 1.2em; }
+      h2 { font-size: 1.25rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.25rem; }
+      a { color: #1d4ed8; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .section { margin: 1rem 0; }
+      .sources { margin-top: 1.5rem; }
+      ul { padding-left: 1.2rem; }
+    </style>
+  </head>
+  <body>
+    {% for section in sections %}
+      <div class="section">
+        <h2>{{ section.title }}</h2>
+        <div>{{ section.html | safe }}</div>
+      </div>
+    {% endfor %}
+
+    {% if sources %}
+    <div class="sources">
+      <h3>Sources</h3>
+      <ul>
+        {% for url, name in sources.items() %}
+        <li><a href="{{ url }}">{{ name or url }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </body>
+  </html>
+
