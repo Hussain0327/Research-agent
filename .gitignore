@@ -1,20 +1,81 @@
-# Python
+# -----------------------------
+# Python bytecode / caches
+# -----------------------------
 __pycache__/
 *.py[cod]
-
-# Environments
-.venv/
-
-# Local config
-.env
-
-# Caches & tooling
-.cache/
+*.pyo
+*.pyd
+*.so
+*.dll
+*.dylib
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.ipynb_checkpoints/
 
-# Outputs
-output/
+# -----------------------------
+# Virtual environments
+# -----------------------------
+.venv/
+venv/
+env/
+ENV/
+__pypackages__/
 
-# macOS
+# -----------------------------
+# Local config / secrets
+# -----------------------------
+.env
+.env.*
+!.env.example          # keep the example in git
+
+# -----------------------------
+# Caches & tooling
+# -----------------------------
+.cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+pip-wheel-metadata/
+*.egg
+*.egg-info/
+.eggs/
+
+# -----------------------------
+# Logs / temp
+# -----------------------------
+*.log
+logs/
+tmp/
+*.tmp
+*.swp
+*.swo
+*~
+.#*
+
+# -----------------------------
+# Project outputs
+# -----------------------------
+output/                # generated newsletter files
+# If you publish via GitHub Pages using /docs, DO NOT ignore docs/
+# docs/                # (leave commented so Pages can work)
+
+# -----------------------------
+# OS / editor junk
+# -----------------------------
 .DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+.idea/
+.vscode/
+*.code-workspace
 
+# -----------------------------
+# Git history cleanup
+# -----------------------------
+.bfg-report/
+bfg.jar
