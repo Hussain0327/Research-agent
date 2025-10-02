@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import html
 import json
 import logging
 import os
@@ -114,7 +113,8 @@ def draft_section(settings: Settings, form: FormInput, section: SectionPlan) -> 
 
     # Extract links from html for sources list; keep only absolute http(s) URLs
     urls = OrderedDict()
-    for url in re.findall(r"href=\"([^\"]+)\"", html_body):
+    # Support both single and double quotes around href values
+    for url in re.findall(r'href=[\'"]([^\'"]+)[\'"]', html_body):
         parsed = urlparse(url)
         if parsed.scheme in ("http", "https") and parsed.netloc:
             urls[url] = None
@@ -142,12 +142,14 @@ def compose_subject(settings: Settings, form: FormInput, html_body: str) -> str:
 
 
 def render_html(settings: Settings, subject: str, sections: List[SectionDraft]) -> Tuple[str, Dict[str, str]]:
-    # Aggregate sources from sections, preserving order and uniqueness
+    # Aggregate sources from sections, preserving order and uniqueness (keys as strings)
     agg_sources: Dict[str, str] = OrderedDict()
     for s in sections:
         for url in s.sources:
-            if url not in agg_sources:
-                agg_sources[url] = ""
+            url_str = str(url)  # coerce HttpUrl -> str (or keep str as-is)
+            if url_str not in agg_sources:
+                agg_sources[url_str] = ""
+
     # Sort sources alphabetically by URL for stability
     agg_sources = OrderedDict(sorted(agg_sources.items(), key=lambda kv: kv[0]))
 
@@ -179,4 +181,8 @@ def run_pipeline(settings: Settings, form: FormInput) -> Newsletter:
         subject = f"{form.topic.strip().title()} — {subject_hint[:60]}"
 
     html_out, sources = render_html(settings, subject, drafts)
+
+    # Defensive: ensure string keys/values for Pydantic model
+    sources = {str(k): ("" if v is None else str(v)) for k, v in (sources or {}).items()}
+
     return Newsletter(subject=subject, html=html_out, sources=sources)
