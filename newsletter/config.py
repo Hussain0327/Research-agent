@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # LLM
     llm_provider: str = Field("openai", description="openai or anthropic")
     llm_model: str = Field("gpt-4o-mini", description="Model name for chosen provider")
+    llm_temperature: float = Field(0.7, description="Temperature for LLM generation (0.0-1.0)")
     openai_api_key: str | None = Field(default=None)
     anthropic_api_key: str | None = Field(default=None)
 
@@ -20,6 +21,10 @@ class Settings(BaseSettings):
     # Output & limits
     max_words: int = 1000
     per_section_word_target: int = 180
+
+    # Market data integration
+    enable_market_data: bool = Field(True, description="Auto-generate market data section with charts")
+    market_data_position: int = Field(0, description="Position of market section (0=first, -1=last)")
 
     # Email (SMTP)
     smtp_host: str | None = None

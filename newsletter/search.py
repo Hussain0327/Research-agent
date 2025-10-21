@@ -41,12 +41,24 @@ def tavily_search(settings: Settings, query: str) -> List[SearchResult]:
 
     payload = {
         "api_key": settings.tavily_api_key,
-        "query": query,
-        "search_depth": "basic",
+        "query": query[:400],  # Truncate query to avoid API limits
+        "search_depth": "advanced",  # Use advanced search for better quality
         "include_answer": True,
         "topic": "news",
         "include_raw_content": True,
         "max_results": settings.tavily_max_results,
+        "include_domains": [  # Focus on quant-specific sources
+            "arxiv.org",
+            "ssrn.com",
+            "papers.ssrn.com",
+            "quantpedia.com",
+            "bloomberg.com",
+            "ft.com",
+            "wsj.com",
+            "reuters.com",
+            "marketwatch.com",
+            "seekingalpha.com"
+        ]
     }
     resp = requests.post(settings.tavily_endpoint, json=payload, timeout=30)
     resp.raise_for_status()
