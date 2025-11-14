@@ -1,4 +1,4 @@
-# AI Research Agent (Quant Edition) with Market Data and Charts
+# AI Research Agent with Market Data and Charts
 
 A quant newsletter generator that uses LLMs, live market data (Yahoo Finance and FRED), and inline charts. Configured through `.env`. Built for researchers, traders, and founders who care more about data than hype.
 
