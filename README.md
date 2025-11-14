@@ -1,13 +1,13 @@
-# AI research agent (Quant Edition) — with Market Data & Charts
+# AI Research Agent (Quant Edition) with Market Data and Charts
 
-A fast, reliable **quant newsletter generator** that blends curated sources, LLM writing, **live market data (Yahoo Finance + FRED)**, and **embedded charts**—all configurable via `.env`. Built for researchers, traders, and founders who want signal over fluff.
+A quant newsletter generator that uses LLMs, live market data (Yahoo Finance and FRED), and inline charts. Configured through `.env`. Built for researchers, traders, and founders who care more about data than hype.
 
-## What’s inside
+## What is inside
 
-* **Topic-aware research**: Higher-quality search tuned to quant/finance domains (arXiv, SSRN, Bloomberg, FT, WSJ, Reuters, etc.).
-* **Live market data**: Snapshots for SPY/Dow/Nasdaq/VIX + key macro (Fed Funds, CPI, 10Y yield).
-* **Embedded charts**: Price, comparison, and returns histograms as base64 PNGs—no external hosting.
-* **Production hygiene**: Error handling, logging, deterministic temperature controls, tests, and a clean pipeline.
+* **Quant-focused search**: Uses Tavily with filters for finance and quant sources like arXiv, SSRN, Bloomberg, FT, WSJ, Reuters, and similar sites.
+* **Live market data**: Snapshots for SPY, Dow, Nasdaq, VIX, plus macro data like Fed Funds, CPI, and the 10Y yield.
+* **Inline charts**: Price charts, comparisons, and return histograms as base64 PNGs, so they embed directly in HTML.
+* **Basic production hygiene**: Error handling, logging, configurable temperature, tests, and a simple pipeline that is easy to run again.
 
 ---
 
@@ -16,8 +16,8 @@ A fast, reliable **quant newsletter generator** that blends curated sources, LLM
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env  
-```
+cp .env.example .env
+````
 
 Generate a newsletter:
 
@@ -44,49 +44,65 @@ python -m http.server --directory output 8000
 LLM_TEMPERATURE=0.7  # e.g., 0.5 for more deterministic output
 
 # Market data feature flags
-ENABLE_MARKET_DATA=true    # turn market data & charts on/off
+ENABLE_MARKET_DATA=true    # turn market data and charts on or off
 MARKET_DATA_POSITION=0     # 0 = first section, -1 = last
 ```
 
 ---
 
-## Key Features
+## Key features
 
-* **Quant-specific search** (Tavily advanced mode): trims long queries, filters to credible domains:
+* **Quant-specific search** (Tavily advanced mode): trims long queries and prefers finance and quant domains:
 
   * Academic: `arxiv.org`, `ssrn.com`, `quantpedia.com`
   * News: `bloomberg.com`, `ft.com`, `wsj.com`, `reuters.com`, `marketwatch.com`, `seekingalpha.com`
-* **Robust LLM calls**: Graceful failure with clear logs; no hard crashes.
-* **Charts everywhere**: VIX 3-month chart, asset comparisons (e.g., SPY vs. QQQ), returns histograms.
-* **Topic-aware tickers**:
+
+* **LLM calls with error handling**: Wrapped in try and except with clear logs so a single failure does not kill the whole run.
+
+* **Charts**: VIX chart, asset comparisons (for example SPY vs QQQ), and return histograms.
+
+* **Topic-based tickers**:
 
   * Mentions *crypto/bitcoin* → `BTC-USD`, `ETH-USD`
   * Mentions *tech/AI* → `QQQ`, Nasdaq
   * Mentions *bonds/treasury* → `TLT`, `IEF`
-  * Default → `SPY` (+ always `^VIX`)
+  * Default → `SPY` (plus `^VIX` by default)
 
 ---
 
 ## How it works (modules)
 
-* `newsletter/search.py` — smarter search for quant content (advanced depth, domain filters, safe truncation).
-* `newsletter/llm.py` — OpenAI/Anthropic calls with try/except, contextual logging, configurable temperature.
-* `newsletter/data.py` — data fetchers:
+* `newsletter/search.py`
+  Quant-aware search using Tavily, domain filters, and safe truncation for long prompts.
+
+* `newsletter/llm.py`
+  OpenAI or Anthropic calls with error handling, simple logging, and configurable temperature.
+
+* `newsletter/data.py`
+  Data helpers:
 
   * `get_stock_data()` (Yahoo Finance)
   * `get_fred_data()` (FRED)
-  * `get_market_summary()` (SPX/Dow/Nasdaq/VIX)
+  * `get_market_summary()` (SPX, Dow, Nasdaq, VIX)
   * `get_economic_indicators()` (rates, CPI, unemployment)
-* `newsletter/charts.py` — `matplotlib` chart makers:
 
-  * `create_price_chart()`, `create_comparison_chart()`, `create_returns_chart()`
-  * Returns base64 PNGs for direct HTML embedding.
-* `newsletter/pipeline.py` — orchestrates topic → sources → writing → market section + charts.
-* `newsletter/templates/newsletter.html.j2` — polished layout with:
+* `newsletter/charts.py`
+  `matplotlib` charts:
 
-  * `.market-data-section` (styled box)
-  * `.chart-container` (responsive)
-  * `.chart-caption` (concise context)
+  * `create_price_chart()`
+  * `create_comparison_chart()`
+  * `create_returns_chart()`
+    Each returns a base64 PNG string that can be embedded directly in HTML.
+
+* `newsletter/pipeline.py`
+  Orchestrates the flow: topic → search results → LLM writing → market data section and charts.
+
+* `newsletter/templates/newsletter.html.j2`
+  HTML layout with:
+
+  * `.market-data-section` for the market snapshot
+  * `.chart-container` for responsive charts
+  * `.chart-caption` for short descriptions
 
 Example demo:
 
@@ -96,18 +112,18 @@ python examples/data_and_charts_demo.py
 
 ---
 
-## Example Output (tested)
+## Example output (tested)
 
-* VIX chart embedded (≈65KB PNG)
-* Market snapshot: SPY daily % change, VIX, Dow, Nasdaq
+* VIX chart embedded (around 65 KB PNG)
+* Market snapshot: SPY daily percent change, VIX, Dow, Nasdaq
 * Economic indicators: 10Y Treasury, Fed Funds, CPI, unemployment
-* 6 AI-written sections tailored to topic and audience
+* Six LLM written sections tailored to the topic and audience
 
 ---
 
-## File Tree (condensed)
+## File tree (condensed)
 
-```
+```text
 ├── README.md
 ├── examples/
 │   └── data_and_charts_demo.py
@@ -133,70 +149,81 @@ python examples/data_and_charts_demo.py
 
 ---
 
-## Roadmap — Project Three: **StatArb Factor Backtester** (integration)
+## Roadmap: StatArb factor backtester integration
 
-**Goal:** Add a lean research pipeline that computes factor signals (e.g., momentum, value, quality) and **auto-embeds** performance snapshots into each newsletter.
+**Goal:** Add a research pipeline that computes factor signals (for example momentum, value, quality) and embeds performance snapshots into each newsletter.
 
-* **Module**: `newsletter/factors/` (planned)
+*Planned module*: `newsletter/factors/`
 
-  * `load_universe()` (liquid equities)
-  * `compute_factors()` (your chosen set)
-  * `backtest_walkforward()` (proper splits, costs, turnover caps)
-* **Outputs in newsletter**:
+* `load_universe()` for a liquid equity universe
+* `compute_factors()` for the selected factor set
+* `backtest_walkforward()` with proper splits, transaction costs, and turnover limits
 
-  * **Performance table**: Sharpe, max drawdown, hit rate
-  * **Charts**: equity curve, factor contribution, turnover
-  * **Sanity checks**: look-ahead and survivorship defenses, cost sensitivity
-* **Controls**:
+*Planned outputs in the newsletter*:
 
-  * `.env`: `ENABLE_FACTOR_SECTION=true`, `FACTOR_LOOKBACK_DAYS=252`, `TRANSACTION_COST_BPS=5`
+* **Performance table**: Sharpe, max drawdown, hit rate
+* **Charts**: equity curve, factor contribution, turnover
+* **Checks**: look ahead and survivorship checks, plus cost sensitivity
 
-*This keeps the newsletter actionable: every issue ships with fresh factor context and reproducible charts.*
+*Planned controls*:
+
+* `.env`: `ENABLE_FACTOR_SECTION=true`
+* `.env`: `FACTOR_LOOKBACK_DAYS=252`
+* `.env`: `TRANSACTION_COST_BPS=5`
+
+This would make each issue include current factor context and charts that are reproducible from code.
 
 ---
 
 ## Troubleshooting
 
-* **No charts?** Check `.env` flags and confirm `matplotlib` installed from `requirements.txt`.
-* **Data fetch failed?** You’ll still get a newsletter; logs will show which data call failed.
-* **LLM timeouts?** Lower `LLM_TEMPERATURE` or retry; errors are logged with context.
+* **No charts**
+  Check the `.env` flags and confirm `matplotlib` is installed from `requirements.txt`.
+
+* **Data fetch failed**
+  You still get a newsletter. The logs show which call failed.
+
+* **LLM timeouts**
+  Lower `LLM_TEMPERATURE` or run again. Errors are logged with context.
 
 ---
 
 ## License
 
-MIT — use freely, ship confidently.
+MIT. Use and modify freely.
 
 ---
 
-# Complete Summary of Changes (human write-up)
+# Complete summary of changes
 
-**What I changed and why**
+**What changed and why**
 
-1. **Search quality (quant domains)**
-   Switched Tavily to advanced mode, trimmed long prompts, and whitelisted credible finance/quant sites. You’ll get fewer generic blog posts and more first-rate sources.
+1. **Search for quant sources**
+   Switched Tavily to advanced mode, trimmed long prompts, and restricted results to finance and quant sites. This reduces generic blog spam and surfaces more useful sources.
 
 2. **LLM reliability**
-   Wrapped provider calls in try/except with explicit error messages. Failures degrade gracefully instead of killing the run.
+   Wrapped all provider calls in try and except blocks with clear error messages. If one call fails, the rest of the pipeline can still finish.
 
-3. **Controlled style**
-   Added `LLM_TEMPERATURE` so you can tighten or loosen writing tone per issue.
+3. **Style control**
+   Added `LLM_TEMPERATURE` in `.env` so you can adjust how focused or creative the writing should be for a given issue.
 
-4. **Live market data + charts**
-   Built a small data layer (Yahoo + FRED) and a chart layer (matplotlib). The pipeline auto-chooses tickers from the topic and always includes a VIX snapshot. Charts are embedded as base64, so the newsletter is portable.
+4. **Market data and charts**
+   Added a data layer (Yahoo Finance and FRED) and a chart layer (matplotlib). The pipeline chooses tickers based on the topic and always includes VIX. Charts are embedded as base64 strings, so the HTML file is self contained.
 
 5. **Pipeline integration**
-   Wired market data as a first/last section (configurable). If data calls hiccup, the rest of the newsletter still renders.
+   Wired the market section so it can appear at the start or end of the newsletter, controlled through `.env`. If data calls fail, the rest of the content still renders.
 
-6. **Docs & examples**
-   Updated `README.md`, added a demo script, expanded `.env.example`, and bumped `requirements.txt`.
+6. **Docs and examples**
+   Updated `README.md`, added a demo script, expanded `.env.example`, and updated `requirements.txt`.
 
-**Files created**: `newsletter/data.py`, `newsletter/charts.py`, `examples/data_and_charts_demo.py`, `CHANGES.md`
-**Files modified**: `newsletter/search.py`, `newsletter/llm.py`, `newsletter/config.py`, `newsletter/pipeline.py`, `newsletter/templates/newsletter.html.j2`, `requirements.txt`, `README.md`, `.env.example`
+**Files created**:
+`newsletter/data.py`, `newsletter/charts.py`, `examples/data_and_charts_demo.py`, `CHANGES.md`
 
-**How to run** (one-liner):
+**Files modified**:
+`newsletter/search.py`, `newsletter/llm.py`, `newsletter/config.py`, `newsletter/pipeline.py`, `newsletter/templates/newsletter.html.j2`, `requirements.txt`, `README.md`, `.env.example`
+
+**How to run**:
 
 ```bash
 python -m newsletter --topic "Quantitative Trading" --tone "Professional" --audience "Traders"
 ```
-
